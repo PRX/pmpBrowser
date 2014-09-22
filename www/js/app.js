@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmpBrowser.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -30,6 +30,14 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       controller: 'AppCtrl'
     })
 
+    .state('app.recommended', {
+      url: "/recommended",
+      views: {
+        'menuContent' :{
+          templateUrl: "templates/recommended.html"
+        }
+      }
+    })
     .state('app.search', {
       url: "/search",
       views: {
@@ -38,7 +46,6 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         }
       }
     })
-
     .state('app.browse', {
       url: "/browse",
       views: {
@@ -47,26 +54,15 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         }
       }
     })
-    .state('app.playlists', {
-      url: "/playlists",
-      views: {
-        'menuContent' :{
-          templateUrl: "templates/playlists.html",
-          controller: 'PlaylistsCtrl'
-        }
-      }
-    })
-
     .state('app.single', {
-      url: "/playlists/:playlistId",
+      url: "/docs/:guid",
       views: {
         'menuContent' :{
-          templateUrl: "templates/playlist.html",
-          controller: 'PlaylistCtrl'
+          templateUrl: "templates/doc.html"
         }
       }
     });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/playlists');
+  $urlRouterProvider.otherwise('/app/recommended');
 });
 
