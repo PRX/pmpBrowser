@@ -2,7 +2,8 @@ pmpBrowser
 ==========
 
 AngularJS and Ionic based browser for PMP API
-=======
+
+
 Your Ionic project is ready to go! Some quick tips:
 
  * cd into your project: $ cd pmpBrowser
