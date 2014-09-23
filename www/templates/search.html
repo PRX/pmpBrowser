@@ -7,9 +7,23 @@
     <div class="list list-inset">
       <label class="item item-input">
         <i class="icon ion-search placeholder-icon"></i>
-        <input type="text" placeholder="Search" ng-model="search.string" ng-change="pmpSearch()">
+        <input  type="text"
+                placeholder="Search"
+                ng-model="search.string">
       </label>
     </div>
+
+    <ion-list>
+      <ion-item ng-repeat="doc in items" href="#/app/docs/{{doc.attributes.guid}}">
+        {{doc.attributes.title}}
+      </ion-item>
+    </ion-list>
+
+    <ion-infinite-scroll
+      ng-if="moreDataCanBeLoaded()"
+      on-infinite="loadMore()"
+      distance="1%">
+    </ion-infinite-scroll>
 
   </ion-content>
 </ion-view>
