@@ -12,10 +12,13 @@
                 ng-model="search.string">
       </label>
     </div>
+
   
     <ion-list>
-      <ion-item ng-repeat="doc in items" href="#/app/docs/{{doc.attributes.guid}}">
-        {{doc.attributes.title}}
+      <ion-item ng-repeat="doc in items" href="#/app/docs/{{doc.attributes.guid}}" class="item-thumbnail-left">
+        <img ng-src="{{doc.imageUrl() ||  'img/logo.png' }}" />
+        <h2 ng-bind-html="doc.attributes.title"></h2>
+        <p ng-bind-html="(doc.attributes.teaser || doc.attributes.description || doc.attributes.contentencoded)| limitTo: 200"></p>
       </ion-item>
     </ion-list>
 

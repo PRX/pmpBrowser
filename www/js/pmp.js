@@ -34,6 +34,45 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
 
   CollectionDoc.prototype = {
 
+    profile: function () {
+      if (p = this.links.profile) {
+        return p[0].href.split('/').pop();
+      }
+    },
+
+    imageUrl: function () {
+      var imageHref = null;
+      // find items with a profile of 'image'
+      var images = lodash.filter(this.items, function(i){ return i.profile() == 'image'; });
+
+      if (!images) {
+        return;
+      }
+
+      var image = images[0];
+
+      if (angular.isUndefined(image)) {
+        return;
+      }
+
+      console.log('image', image);
+
+      if (image.links['enclosure'].length > 0 ) {
+        imageHref = image.links['enclosure'][0].href;
+      }
+
+      if (image.links['enclosure'].length > 1) {
+        var enc = lodash.find(image.links['enclosure'], function (e) { return (e['meta'] && e['meta']['crop'] == 'square'); });
+        enc = enc || lodash.find(image.links['enclosure'], function (e) { return (e['meta'] && e['meta']['crop'] == 'primary'); });
+        if (enc) {
+          console.log('found an enc!', enc);
+          imageHref = enc.href;
+        }
+      }
+
+      return imageHref;
+    },
+
     next: function () {
       if (this.hasLink('next')) {
         return this.follow('next');
@@ -85,11 +124,12 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
   };
 
   window.CollectionDoc = CollectionDoc;
+  window.lodash = lodash;
 
   return CollectionDoc;
 }).factory('$pmp', function ($q, $http, $document) {
 
-  var baseUrl = 'http://support.pmp.io.dev/proxy/sandbox/';
+  var baseUrl = 'http://support.pmp.io.dev/proxy/sandbox';
 
   return {
 
@@ -105,7 +145,8 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
     extractQuery: function (fullUrl) {
       var parser = $document[0].createElement('a');
       parser.href = fullUrl;
-      console.log('parser', fullUrl, parser, parser.pathname, parser.search);
+
+      // console.log('parser', fullUrl, parser, parser.pathname, parser.search);
       return (parser.pathname + parser.search);
     },
 

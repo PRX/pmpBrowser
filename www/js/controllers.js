@@ -3,6 +3,8 @@ angular.module('pmpBrowser.controllers', [])
 
   $scope.search = {};
 
+  window.search = $scope.search;
+
   $scope.items = [];
 
   $scope.$watch('search.string', function(newValue, oldValue) {
@@ -19,16 +21,16 @@ angular.module('pmpBrowser.controllers', [])
 
   $scope.moreDataCanBeLoaded = function () {
     var loadMore = !!($scope.search.result && $scope.search.result.hasLink('next'));
-    console.log('moreDataCanBeLoaded', loadMore);
+    // console.log('moreDataCanBeLoaded', loadMore);
     return loadMore;
   };
 
   $scope.loadMore = function () {
-    console.log('loadMore');
+    // console.log('loadMore');
 
     $scope.search.result.next().then(
       function (doc) {
-        console.log('loadMore doc', doc);
+        // console.log('loadMore doc', doc);
         if (doc) {
           $scope.search.result = doc;
           $scope.items = $scope.items.concat(doc.items);
@@ -48,7 +50,7 @@ angular.module('pmpBrowser.controllers', [])
 
     // console.log('pmp query', $scope.search.string);
 
-    $ionicLoading.show({ template: '<i class="icon ion-refreshing"></i> Loading...', noBackdrop: true });
+    $ionicLoading.show({ template: '<i class="icon ion-loading-d"></i> Loading...', noBackdrop: true });
 
     // $pmp.search($scope.search.string).then(
     CollectionDoc.search($scope.search.string).then(
