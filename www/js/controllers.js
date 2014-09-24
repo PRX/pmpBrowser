@@ -18,29 +18,42 @@ angular.module('pmpBrowser.controllers', [])
 
 
   $scope.moreDataCanBeLoaded = function () {
-    return false;
+    var loadMore = !!($scope.search.result && $scope.search.result.hasLink('next'));
+    console.log('moreDataCanBeLoaded', loadMore);
+    return loadMore;
   };
 
   $scope.loadMore = function () {
-    var nextLink = $filter('filter')($scope.search.result.links.navigation, function(l) { return l.rels[0] == 'next' } )[0];
-    $scope.$broadcast('scroll.infiniteScrollComplete');
+    console.log('loadMore');
+
+    $scope.search.result.next().then(
+      function (doc) {
+        console.log('loadMore doc', doc);
+        if (doc) {
+          $scope.search.result = doc;
+          $scope.items = $scope.items.concat(doc.items);
+          $scope.$broadcast('scroll.infiniteScrollComplete');
+        }
+      }
+    );
+
   };
 
   $scope.pmpSearch = function (query, options) {
-    if (angular.isUndefined(query) || query.length <= 2) {
-      $scope.search.result = null;
-      return $scope.search.result;
-    }
+    // // use this to prevent search unless there is text
+    // if (angular.isUndefined(query) || query.length <= 2) {
+    //   $scope.search.result = null;
+    //   return $scope.search.result;
+    // }
 
-    console.log('pmp query', $scope.search.string);
+    // console.log('pmp query', $scope.search.string);
 
     $ionicLoading.show({ template: '<i class="icon ion-refreshing"></i> Loading...', noBackdrop: true });
 
     // $pmp.search($scope.search.string).then(
     CollectionDoc.search($scope.search.string).then(
       function (doc) {
-        console.log('pmp doc', doc, doc.items);
-        window.result = doc;
+        // console.log('pmp doc', doc, doc.items);
         $scope.search.result = doc;
         $scope.items = $scope.items.concat(doc.items);
         $ionicLoading.hide();

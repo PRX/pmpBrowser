@@ -9,7 +9,7 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
     this.version    = data.version || '1.0';
     this.attributes = data.attributes;
     this.links      = data.links;
-    this.items      = lodash.map(this.data.items, function (i) { return new CollectionDoc(i) });
+    this.items      = lodash.map(lodash.compact(this.data.items), function (i) { return new CollectionDoc(i); });
   }
 
   CollectionDoc.init = function () {
@@ -42,7 +42,7 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
 
     follow: function (rel, options) {
       var link = this.findLink(rel);
-      console.log('follow link', link);
+      // console.log('follow link', link);
       var followUrl = null;
 
       if (link.href) {
@@ -52,7 +52,7 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
         var vars  = lodash.pick((options || {}), lodash.keys(link['href-vars']));
         followUrl = UriTemplate.parse(tpl).expand(vars);
       }
-      console.log('follow url', followUrl);
+      // console.log('follow url', followUrl);
 
       return this.request(followUrl).then( function (data) { return new CollectionDoc(data.data); } );
     },
@@ -110,7 +110,7 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
     extractQuery: function (fullUrl) {
       var parser = $document[0].createElement('a');
       parser.href = fullUrl;
-      console.log('parser', fullUrl, parser, parser.pathname, parser.search)
+      // console.log('parser', fullUrl, parser, parser.pathname, parser.search)
       return (parser.pathname + parser.search);
     },
 
