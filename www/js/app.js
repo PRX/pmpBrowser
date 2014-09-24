@@ -6,8 +6,11 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmp'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, CollectionDoc) {
   $ionicPlatform.ready(function() {
+
+    CollectionDoc.init();
+
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if(window.cordova && window.cordova.plugins.Keyboard) {

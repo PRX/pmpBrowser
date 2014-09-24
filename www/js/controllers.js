@@ -1,5 +1,5 @@
 angular.module('pmpBrowser.controllers', [])
-.controller('AppCtrl', function($scope, $pmp, $ionicLoading) {
+.controller('AppCtrl', function($scope, $pmp, $ionicLoading, CollectionDoc) {
 
   $scope.search = {};
 
@@ -23,7 +23,6 @@ angular.module('pmpBrowser.controllers', [])
 
   $scope.loadMore = function () {
     var nextLink = $filter('filter')($scope.search.result.links.navigation, function(l) { return l.rels[0] == 'next' } )[0];
-    
     $scope.$broadcast('scroll.infiniteScrollComplete');
   };
 
@@ -35,21 +34,24 @@ angular.module('pmpBrowser.controllers', [])
 
     console.log('pmp query', $scope.search.string);
 
-    $ionicLoading.show({ template: 'Loading...'});
+    $ionicLoading.show({ template: '<i class="icon ion-refreshing"></i> Loading...', noBackdrop: true });
 
-    $pmp.search($scope.search.string).then(
-      function (data) {
-        console.log('pmp data', data);
-        window.results = data;
-        $scope.search.results = data;
-        $scope.items = $scope.items.concat(data.items);
+    // $pmp.search($scope.search.string).then(
+    CollectionDoc.search($scope.search.string).then(
+      function (doc) {
+        console.log('pmp doc', doc, doc.items());
+        window.result = doc;
+        $scope.search.result = doc;
+        $scope.items = $scope.items.concat(doc.items());
         $ionicLoading.hide();
       },
       function (data) {
-        $scope.search.results = null;
+        $scope.search.result = null;
         $ionicLoading.hide();
       }
     );
+
+
   };
 
 });
