@@ -39,10 +39,10 @@ angular.module('pmpBrowser.controllers', [])
     // $pmp.search($scope.search.string).then(
     CollectionDoc.search($scope.search.string).then(
       function (doc) {
-        console.log('pmp doc', doc, doc.items());
+        console.log('pmp doc', doc, doc.items);
         window.result = doc;
         $scope.search.result = doc;
-        $scope.items = $scope.items.concat(doc.items());
+        $scope.items = $scope.items.concat(doc.items);
         $ionicLoading.hide();
       },
       function (data) {

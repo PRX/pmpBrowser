@@ -1,10 +1,15 @@
 angular.module('pmp', ['ngLodash', 'uri-template'])
-.factory('CollectionDoc', function ($pmp, $document, UriTemplate, lodash) {
+.factory('CollectionDoc', function ($pmp, UriTemplate, lodash) {
 
   var rootPromise = null;
 
   function CollectionDoc(data) {
-    this.data = (data || {});
+    this.data       = data;
+    this.href       = data.href || null;
+    this.version    = data.version || '1.0';
+    this.attributes = data.attributes;
+    this.links      = data.links;
+    this.items      = lodash.map(this.data.items, function (i) { return new CollectionDoc(i) });
   }
 
   CollectionDoc.init = function () {
@@ -29,33 +34,51 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
 
   CollectionDoc.prototype = {
 
-    items: function () {
-      return this.data.items;
-    },
-
     next: function () {
-      var nextLink = this.findLink('navigation', 'next');
-      if (angular.isDefined(nextLink)) {
-        return $pmp.follow(nextLink.href);
+      if (this.hasLink('next')) {
+        return this.follow('next');
       }
     },
 
-    findLink: function (type, rel) {
-      var linkType = this.data.links[type];
-      if (angular.isDefined(linkType)) {
-        return lodash.find(linkType, function(l) { return lodash.contains(l.rels, rel); });
+    follow: function (rel, options) {
+      var link = this.findLink(rel);
+      console.log('follow link', link);
+      var followUrl = null;
+
+      if (link.href) {
+        followUrl = link.href;
+      } else if (link['href-template']) {
+        var tpl   = link['href-template'];
+        var vars  = lodash.pick((options || {}), lodash.keys(link['href-vars']));
+        followUrl = UriTemplate.parse(tpl).expand(vars);
       }
+      console.log('follow url', followUrl);
+
+      return this.request(followUrl).then( function (data) { return new CollectionDoc(data.data); } );
+    },
+
+    hasLink: function (rel) {
+      return angular.isDefined(this.findLink(rel));
+    },
+
+    findLink: function (rel) {
+      var link = null;
+      lodash.find(this.data.links, function (typeLinks, type) {
+        return link = lodash.find(typeLinks, function (l) {
+          return lodash.contains(l.rels, rel);
+        });
+      });
+      return link;
     },
 
     request: function (url) {
-      $pmp.follow(url);
+      return $pmp.follow(url);
     },
 
-    search: function (query) {
+    search: function (query, options) {
       return CollectionDoc.root().then( function (rootDoc) {
-        var queryLink = rootDoc.findLink('query', 'urn:collectiondoc:query:docs');
-        console.log('queryLink', queryLink);
-        return $pmp.search(query).then( function (data) { return new CollectionDoc(data.data); } );
+        var vars = lodash.merge({text: query, profile: 'story', limit: 20}, (options || {}));
+        return rootDoc.follow('urn:collectiondoc:query:docs', vars);
       });
     }
 
@@ -64,7 +87,7 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
   window.CollectionDoc = CollectionDoc;
 
   return CollectionDoc;
-}).factory('$pmp', function ($q, $http) {
+}).factory('$pmp', function ($q, $http, $document) {
 
   var baseUrl = 'http://support.pmp.io.dev/proxy/sandbox/';
 
@@ -85,8 +108,9 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
     },
 
     extractQuery: function (fullUrl) {
-      var parser = $document.createElement('a');
+      var parser = $document[0].createElement('a');
       parser.href = fullUrl;
+      console.log('parser', fullUrl, parser, parser.pathname, parser.search)
       return (parser.pathname + parser.search);
     },
 
