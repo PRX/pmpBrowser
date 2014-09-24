@@ -97,11 +97,6 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
       return this.request(baseUrl);
     },
 
-    search: function (query) {
-      var searchUrl = baseUrl + 'docs?profile=story&limit=20&text=' + query;
-      return this.request(searchUrl);
-    },
-
     follow: function (locationString) {
       var followUrl = baseUrl + this.extractQuery(locationString);
       return this.request(followUrl);
