@@ -22,8 +22,7 @@ angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmp'])
     }
   });
 })
-
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, CollectionDocProvider) {
   $stateProvider
 
     .state('app', {
@@ -57,15 +56,20 @@ angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmp'])
         }
       }
     })
-    .state('app.single', {
+    .state('app.doc', {
       url: "/docs/:guid",
       views: {
         'menuContent' :{
-          templateUrl: "templates/doc.html"
+          templateUrl: "templates/doc.html",
+          controller: 'DocCtrl'
+        }
+      },
+      resolve: {
+        doc: function ($rootScope, $stateParams, CollectionDoc) {
+          return CollectionDoc.findDoc($stateParams.guid);
         }
       }
     });
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/search');
 });
-

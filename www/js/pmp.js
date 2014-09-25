@@ -1,5 +1,7 @@
-angular.module('pmp', ['ngLodash', 'uri-template'])
-.factory('CollectionDoc', function ($pmp, UriTemplate, lodash) {
+angular.module('pmp', ['ngLodash', 'uri-template', 'angular-data.DSCacheFactory',])
+.factory('CollectionDoc', function ($pmp, UriTemplate, lodash, DSCacheFactory) {
+
+  var docCache = DSCacheFactory('pmpDocCache');
 
   var rootPromise = null;
 
@@ -26,9 +28,15 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
     return rootPromise;
   };
 
-  CollectionDoc.search = function (query) {
+  CollectionDoc.search = function (options) {
     return this.root().then( function (rootDoc) {
-      return rootDoc.search(query);
+      return rootDoc.search(options);
+    } );
+  }
+
+  CollectionDoc.findDoc = function (guid) {
+    return this.root().then( function (rootDoc) {
+      return rootDoc.findDoc(guid);
     } );
   }
 
@@ -55,17 +63,17 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
         return;
       }
 
-      console.log('image', image);
+      // console.log('image', image);
 
       if (image.links['enclosure'].length > 0 ) {
         imageHref = image.links['enclosure'][0].href;
       }
 
       if (image.links['enclosure'].length > 1) {
-        var enc = lodash.find(image.links['enclosure'], function (e) { return (e['meta'] && e['meta']['crop'] == 'square'); });
-        enc = enc || lodash.find(image.links['enclosure'], function (e) { return (e['meta'] && e['meta']['crop'] == 'primary'); });
+        var enc = lodash.find(image.links['enclosure'], function (e) { return (e['meta'] && e['meta']['crop'] == 'primary'); });
+        enc = enc || lodash.find(image.links['enclosure'], function (e) { return (e['meta'] && e['meta']['crop'] == 'square'); });
         if (enc) {
-          console.log('found an enc!', enc);
+          // console.log('found an enc!', enc);
           imageHref = enc.href;
         }
       }
@@ -114,13 +122,17 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
       return $pmp.follow(url);
     },
 
-    search: function (query, options) {
+    search: function (options) {
       return CollectionDoc.root().then( function (rootDoc) {
-        var vars = lodash.merge({text: query, profile: 'story', limit: 20}, (options || {}));
+        var vars = lodash.merge({profile: 'story', limit: 20}, (options || {}));
         return rootDoc.follow('urn:collectiondoc:query:docs', vars);
       });
+    },
+    findDoc: function (guid) {
+      return CollectionDoc.root().then( function (rootDoc) {
+        return rootDoc.follow('urn:collectiondoc:hreftpl:docs', {'guid': guid});
+      });
     }
-
   };
 
   window.CollectionDoc = CollectionDoc;

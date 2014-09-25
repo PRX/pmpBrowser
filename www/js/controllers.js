@@ -1,36 +1,31 @@
 angular.module('pmpBrowser.controllers', [])
-.controller('AppCtrl', function($scope, $pmp, $ionicLoading, CollectionDoc) {
-
+.controller('DocCtrl', function ($scope, doc) {
+  $scope.doc = doc;
+})
+.controller('AppCtrl', function ($scope, $pmp, $ionicLoading, CollectionDoc) {
   $scope.search = {};
-
-  window.search = $scope.search;
-
   $scope.items = [];
 
-  $scope.$watch('search.string', function(newValue, oldValue) {
+  $scope.$watch('search.string', function (newValue, oldValue) {
     debouncedSearch();
   });
 
   var debouncedSearch = ionic.debounce(function () {
     $scope.$apply(function (){
       $scope.items = [];
-      $scope.pmpSearch($scope.search.string, {});
+      $scope.pmpSearch($scope.search.string);
     });
   }, 400, false);
 
 
   $scope.moreDataCanBeLoaded = function () {
     var loadMore = !!($scope.search.result && $scope.search.result.hasLink('next'));
-    // console.log('moreDataCanBeLoaded', loadMore);
     return loadMore;
   };
 
   $scope.loadMore = function () {
-    // console.log('loadMore');
-
     $scope.search.result.next().then(
       function (doc) {
-        // console.log('loadMore doc', doc);
         if (doc) {
           $scope.search.result = doc;
           $scope.items = $scope.items.concat(doc.items);
@@ -38,7 +33,6 @@ angular.module('pmpBrowser.controllers', [])
         }
       }
     );
-
   };
 
   $scope.pmpSearch = function (query, options) {
@@ -48,12 +42,9 @@ angular.module('pmpBrowser.controllers', [])
     //   return $scope.search.result;
     // }
 
-    // console.log('pmp query', $scope.search.string);
-
     $ionicLoading.show({ template: '<i class="icon ion-loading-d"></i> Loading...', noBackdrop: true });
 
-    // $pmp.search($scope.search.string).then(
-    CollectionDoc.search($scope.search.string).then(
+    CollectionDoc.search({text: query}).then(
       function (doc) {
         // console.log('pmp doc', doc, doc.items);
         $scope.search.result = doc;
@@ -65,8 +56,5 @@ angular.module('pmpBrowser.controllers', [])
         $ionicLoading.hide();
       }
     );
-
-
   };
-
 });
