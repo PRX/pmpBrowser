@@ -1,0 +1,33 @@
+<ion-view>
+  <ion-content class="has-header">
+
+    <div class="card">
+
+      <div class="item item-image" ng-if="doc.imageUrl()">
+        <img ng-src="{{doc.imageUrl()}}"></img>
+      </div>
+
+      <div class="item">
+        <h1 ng-bind-html="doc.attributes.title"></h1>
+        <p>
+          By <span ng-bind="doc.attributes.byline"></span><br/>
+          <span ng-bind="(doc.attributes.published || doc.attributes.created) | date:'medium'"></span>
+        </p>
+      </div>
+
+      <div class="item item-body">
+        <p ng-bind-html="doc.attributes.contentencoded || doc.attributes.description"></p>
+      </div>
+      <div class="item item-body">
+        <button class="button button-small" style='margin: 0.25em;' ng-repeat="tag in doc.attributes.tags track by $index">
+          {{tag}}
+        </div>
+      </div>
+
+
+    </div>
+
+  </ion-content>
+</ion-view>
+
+
