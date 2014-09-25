@@ -129,7 +129,8 @@ angular.module('pmp', ['ngLodash', 'uri-template'])
   return CollectionDoc;
 }).factory('$pmp', function ($q, $http, $document) {
 
-  var baseUrl = 'http://support.pmp.io.dev/proxy/sandbox';
+  // var baseUrl = 'http://support.pmp.io.dev/proxy/sandbox';
+  var baseUrl = 'https://support.pmp.io/proxy/public';
 
   return {
 
