@@ -35,7 +35,7 @@ angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmp', 'pmpBrow
       url: "/about",
       views: {
         'menuContent' :{
-          templateUrl: "templates/recommended.html"
+          templateUrl: "templates/about.html"
         }
       }
     })
