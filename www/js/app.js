@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmp'])
+angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmp', 'pmpBrowser.services.metadata'])
 
 .run(function($ionicPlatform, CollectionDoc) {
   $ionicPlatform.ready(function() {
@@ -31,7 +31,14 @@ angular.module('pmpBrowser', ['ionic', 'pmpBrowser.controllers', 'pmp'])
       templateUrl: "templates/menu.html",
       controller: 'AppCtrl'
     })
-
+    .state('app.about', {
+      url: "/about",
+      views: {
+        'menuContent' :{
+          templateUrl: "templates/recommended.html"
+        }
+      }
+    })
     .state('app.recommended', {
       url: "/recommended",
       views: {
