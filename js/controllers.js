@@ -8,6 +8,15 @@ angular.module('pmpBrowser.controllers', [])
 
   $scope.search = {};
 
+  window.search = $scope.search;
+
+  $scope.totalItems = function () {
+    if ($scope.search && $scope.search.result && $scope.search.result.hasLink('self')) {
+      return $scope.search.result.findLink('self').totalitems;
+    }
+    return 0;
+  }
+
   $scope.orgFor = function (doc) {
     return metadata.orgInfo(doc.links.creator[0].href);
   }
@@ -39,7 +48,6 @@ angular.module('pmpBrowser.controllers', [])
 
   $scope.loadMore = function () {
     if ($scope.search && $scope.search.result) {
-      console.log('loadMore, result next');
       $scope.search.result.next().then(
         function (doc) {
           if (doc) {
@@ -50,7 +58,6 @@ angular.module('pmpBrowser.controllers', [])
         }
       );
     } else {
-      console.log('loadMore, no result', $scope.search.string);
       $scope.pmpSearch($scope.search.string).then( function() {
         $scope.$broadcast('scroll.infiniteScrollComplete');
       });
