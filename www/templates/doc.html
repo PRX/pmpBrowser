@@ -26,6 +26,8 @@
       </div>
 
       <div class="item item-body">
+        <h2 ng-bind-html="doc.attributes.teaser"></h2>
+
         <p ng-bind-html="doc.attributes.contentencoded || doc.attributes.description"></p>
       </div>
 
